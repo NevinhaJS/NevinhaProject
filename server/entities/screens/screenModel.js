@@ -5,6 +5,7 @@ import hookData from './screenHook';
 const ScreenModule = app => {
     const ScreenSchema = mongoose.Schema(
         {
+            label: {type: String},
             name: {type: String, required: true},
             layout: {type: String, required: true },
             navigation: {type: Boolean },

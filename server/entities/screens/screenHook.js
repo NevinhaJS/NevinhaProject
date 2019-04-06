@@ -2,6 +2,7 @@ export default [
     {
         rightScreen: false,
         name: 'SimpleOne',
+        label: 'Home Page',
         layout: 'simple',
         navigation: true,
         settings: {
@@ -15,6 +16,7 @@ export default [
     {
         rightScreen: false,
         name: 'SimpleTwo',
+        label: 'Contatos',
         layout: 'simple',
         navigation: false,
         settings: {

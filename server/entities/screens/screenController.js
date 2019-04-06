@@ -17,15 +17,42 @@ class ScreenController {
         if(id) {
             return this.updateScreen(id, req, res);
         }else {
-            //TODO: addScreen method
+            return this.addScreen(req, res);
         }
-    } 
+    }
+	
+	addScreen(req, res){
+		const ScreenModel = mongoose.model('Screen'),
+			data = {
+                ...this.formatLayoutData(req.body, true)
+            };
+
+		ScreenModel.create(data)
+			.then(resp => res.status(200).json(resp))
+			.catch(err => res.status(500).json(err));
+	}
+
+	getScreens(req, res){
+		let instance = this,
+			ScreenModel = mongoose.model('Screen'),
+			ScreenId = req.params.id;
+		
+		if(ScreenId){
+			ScreenModel.findOne({ _id: ScreenId})
+				.then(data => res.status(200).json(data))
+				.catch(err => res.status(500).json({err}));
+		}else {
+			ScreenModel.find({})
+				.then(data => res.status(200).json(data))
+				.catch(err => res.status(500).json({err}));
+		}
+	}
 
     updateScreen(id, req, res) {
         const ScreenModel = mongoose.model('Screen');
 
         const data = {
-            ...req.body
+            ...this.formatScreenData(req.body)
         }
 
         ScreenModel.findByIdAndUpdate(id, { 
@@ -37,6 +64,48 @@ class ScreenController {
                 previousData: previousData
             });
 		});
+    }
+
+    formatLayoutData({layout, label, navigation, rightScreen, mainNavigation, statusBar, tabBar}, newData) {
+        if(newData) {
+            return this.getDefaultData({
+                label
+            });
+        }
+
+        return {
+            label,
+            layout,
+            navigation,
+            settings: {
+                mainNavigation,
+                statusBar: layout === 'stacked' ? statusBar : false,
+                tabBar: layout === 'tab' ? tabBar : false,
+                rightScreen
+            }
+        }
+    }
+
+    getDefaultData(data) {
+        return {
+            ...data,
+            name: `screen${Date.now()}`, //It must be generated according to the screen label
+            layout: 'tab',
+            navigation: true,
+            settings: {
+                mainNavigation: {
+                    color: '#fff',
+                    backgroundColor: '#0082f3'
+                },
+                tabBar: {
+                    activeTintColor: "tomato",
+                    inactiveTintColor: "gray",
+                    size: 25,
+                    showLabel: false,
+                    backgroundColor: "#0082f3"
+                }
+            }
+        }
     }
 
     /**
